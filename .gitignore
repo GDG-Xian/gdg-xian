@@ -37,3 +37,6 @@ nosetests.xml
 
 # MAC
 *.DS_Store
+
+# PyCharm
+*.idea
