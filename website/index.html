@@ -9,5 +9,10 @@
 		<p>If you are interested, please contribute your talent to us!.</p>
 		<p>Source Code of this website is on Github: <a href="https://github.com/GDG-Xian/gdg-xian">https://github.com/GDG-Xian/gdg-xian</a>, fork it, and submit your pull request.</p>
 		<p>Or, if you have any other idea, feel free to contact us: david.scriptfan#gmail.com(You know, change # to @)</p>
+        <div>
+            {% for post in posts %}
+                <p>{{ post.content | markdown | safe }}</p>
+            {% endfor %}
+        </div>
 	</body>
 </html>
