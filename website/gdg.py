@@ -5,6 +5,8 @@ import jinja2
 import webapp2
 import markdown
 
+from google.appengine.api import oauth
+from google.appengine.api import users
 from google.appengine.ext import ndb
 
 
@@ -13,7 +15,7 @@ def markdown_filter(content):
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 JINJA_ENVIRONMENT.filters['markdown'] = markdown_filter
@@ -48,7 +50,19 @@ class AddPost(webapp2.RequestHandler):
         self.redirect('/')
 
 
+class Login(webapp2.RequestHandler):
+    def get(self):
+        #template = JINJA_ENVIRONMENT.get_template('login.html')
+        #self.response.write(template.render())
+        try:
+            user = oauth.get_current_user()
+            self.response.write(user)
+        except Exception, e:
+            self.response.write(e)
+
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/add', AddPost)
+    ('/add', AddPost),
+    ('/login', Login)
 ], debug=True)
