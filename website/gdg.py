@@ -1,68 +1,28 @@
 #!/usr/bin/env python
-import os
-
-import jinja2
 import webapp2
-import markdown
 
 from google.appengine.api import oauth
 from google.appengine.api import users
-from google.appengine.ext import ndb
+
+from framework import Handler
+from models import Post
 
 
-def markdown_filter(content):
-    return markdown.markdown(content)
-
-
-JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'),
-    extensions=['jinja2.ext.autoescape'],
-    autoescape=True)
-JINJA_ENVIRONMENT.filters['markdown'] = markdown_filter
-
-
-class Post(ndb.Model):
-    content = ndb.StringProperty(indexed=False)
-    created_at = ndb.DateTimeProperty(auto_now_add=True)
-    updated_at = ndb.DateTimeProperty(auto_now_add=True)
-    deleted_at = ndb.DateTimeProperty(auto_now_add=True)
-
-
-class MainPage(webapp2.RequestHandler):
+class IndexHandler(Handler):
     def get(self):
         posts = Post.query().order(-Post.created_at)
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        values = {
-            'posts': posts
-        }
-        self.response.write(template.render(values))
+        self.render_template('index.html', posts=posts)
 
 
-class AddPost(webapp2.RequestHandler):
+class LoginHandler(Handler):
     def get(self):
-        template = JINJA_ENVIRONMENT.get_template('add.html')
-        self.response.write(template.render())
+        self.render_template('login.html')
 
     def post(self):
-        post = Post()
-        post.content = self.request.get('content')
-        post.put()
-        self.redirect('/')
-
-
-class Login(webapp2.RequestHandler):
-    def get(self):
-        #template = JINJA_ENVIRONMENT.get_template('login.html')
-        #self.response.write(template.render())
-        try:
-            user = oauth.get_current_user()
-            self.response.write(user)
-        except Exception, e:
-            self.response.write(e)
+        self.response.write(self.request.arguments())
 
 
 application = webapp2.WSGIApplication([
-    ('/', MainPage),
-    ('/add', AddPost),
-    ('/login', Login)
+    ('/', IndexHandler),
+    ('/login', LoginHandler)
 ], debug=True)

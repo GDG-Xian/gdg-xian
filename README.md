@@ -1,4 +1,10 @@
-gdg-xian
+GDG-Xian
 ========
 
-Website of GDG Xi'an
+这是GDG Xi'an社区的网站源码.
+
+## 需要完成的功能
+
+* 用户通过G+来登录, 并查看自己的信息
+* 显示所有GDG Xi'an的G+页面上的信息, 包括文章/图片/活动等
+* 显示GDG Xi'an的关注者
