@@ -5,7 +5,7 @@
   <span
     class="g-signin"
     data-callback="signinCallback"
-    data-clientid="231159767160-67mkdefbtjuu47kbrgj20vddj9ggo4fh.apps.googleusercontent.com"
+    data-clientid="{{CLIENT_ID}}"
     data-cookiepolicy="single_host_origin"
     data-requestvisibleactions="http://schemas.google.com/AddActivity"
     data-scope="https://www.googleapis.com/auth/plus.login">
@@ -19,7 +19,21 @@ function signinCallback(authResult) {
   if (authResult['status']['signed_in']) {
     // Update the app to reflect a signed in user
     // Hide the sign-in button now that the user is authorized, for example:
-    document.getElementById('signinButton').setAttribute('style', 'display: none');
+    $('#signinButton').hide();
+
+    // Send the code to the server
+    $.post('/store-plus-token', { code: authResult['code'] }, function(result) {
+        // Handle or verify the server response if necessary.
+
+        // Prints the list of people that the user has allowed the app to know
+        // to the console.
+        console.log(result);
+        if (result['profile'] && result['people']){
+            $('#results').html('Hello ' + result['profile']['displayName'] + '. You successfully made a server side call to people.get and people.list');
+        } else {
+            $('#results').html('Failed to make a server-side call. Check your configuration and console.');
+        }
+    });
   } else {
     // Update the app to reflect a signed out user
     // Possible error values:
@@ -27,7 +41,6 @@ function signinCallback(authResult) {
     //   "access_denied" - User denied access to your app
     //   "immediate_failed" - Could not automatically log in the user
     console.log('Sign-in state: ' + authResult['error']);
-    console.log(authResult);
   }
 }
 </script>
